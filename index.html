@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MetaMaks Wallet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ---------------------------------------------------- */
+    /* 1. CSS Переменные: Единое управление цветами и тенями */
+    /* ---------------------------------------------------- */
+    :root {
+      --bg-primary: #0d0d0d;       /* Самый темный фон приложения */
+      --bg-secondary: #1a1a1a;     /* Фон для карточек и панелей */
+      --bg-tertiary: #2a2a2a;      /* Фон для акцентных элементов, ховера */
+      --border-color: #333333;     /* Цвет границ */
+
+      --text-white: #ffffff;
+      --text-light-gray: #e0e0e0;
+      --text-medium-gray: #b0b0b0;
+      --text-dark-gray: #808080;   /* Для второстепенного текста */
+
+      --accent-blue: #4e7bff;      /* Основной акцентный цвет (синий) */
+      --positive-green: #4CAF50;   /* Цвет для положительных изменений */
+      --negative-red: #E57373;    /* Цвет для отрицательных изменений */
+
+      --button-shadow: rgba(0, 0, 0, 0.6);
+      --card-shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 2. Общие стили для body и контейнера приложения */
+    /* ---------------------------------------------------- */
+    body {
+      margin: 0;
+      background-color: var(--bg-primary);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-white);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Выравнивание к верху для скролла */
+      min-height: 100vh;
+      padding: 30px; /* Увеличенный общий отступ для десктопа */
+      box-sizing: border-box;
+      transition: background-color 0.3s ease;
+    }
+
+    .app-container {
+      display: flex;
+      width: 100%;
+      max-width: 1400px; /* Увеличенная максимальная ширина для десктопа */
+      background-color: var(--bg-secondary);
+      border-radius: 28px; /* Еще более скругленные углы */
+      box-shadow: 0 15px 50px var(--card-shadow); /* Более выраженная тень */
+      overflow: hidden; /* Обрезка содержимого по скругленным углам */
+      border: 1px solid var(--border-color); /* Тонкая рамка */
+      transition: all 0.3s ease;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 440px; /* Оптимальная ширина для основного контента */
+      display: flex;
+      flex-direction: column;
+      min-height: 90vh; /* Минимальная высота для центрирования на мобильных */
+    }
+
+    /* ---------------------------------------------------- */
+    /* 3. Хедер (шапка) приложения */
+    /* ---------------------------------------------------- */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .account {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .account span {
+      font-weight: 700;
+      font-size: 1.2em;
+      color: var(--text-light-gray);
+    }
+
+    .address {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.85em;
+      opacity: 0.8;
+      background-color: var(--bg-tertiary);
+      padding: 8px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: opacity 0.2s, background-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .address:hover {
+      opacity: 1;
+      background-color: #3c3c3c;
+    }
+
+    .address svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-medium-gray);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 4. Секция баланса */
+    /* ---------------------------------------------------- */
+    .balance-section {
+      padding: 40px 24px;
+      text-align: center;
+      background: linear-gradient(135deg, #252525, #1e1e1e);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .balance-usd {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--text-white);
+      letter-spacing: -1.5px;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      line-height: 1;
+    }
+
+    .balance-change {
+      font-size: 16px;
+      margin-top: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--positive-green);
+    }
+    .balance-change.negative {
+      color: var(--negative-red);
+    }
+    .balance-change svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ---------------------------------------------------- */
+    /* 5. Кнопки действий (Отправить, Получить и т.д.) */
+    /* ---------------------------------------------------- */
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      padding: 32px;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-button {
+      background-color: var(--bg-tertiary);
+      border-radius: 50%;
+      width: 68px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-blue);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 20px var(--button-shadow);
+    }
+
+    .action-button:hover {
+      background-color: #3c3c3c;
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+    }
+    .action-button:active {
+      transform: translateY(-1px) scale(0.98);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .action-button svg {
+      width: 28px;
+      height: 28px;
+      stroke-width: 2;
+    }
+
+    .button-label {
+      font-size: 0.9em;
+      color: var(--text-medium-gray);
+      font-weight: 500;
+    }
+
+    /* ---------------------------------------------------- */
+    /* 6. Вкладки (Токены, NFT, История) */
+    /* ---------------------------------------------------- */
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-secondary);
+      padding: 0 20px;
+    }
+
+    .tab {
+      padding: 18px 0;
+      flex: 1;
+      text-align: center;
+      font-weight: 600;
+      color: var(--text-dark-gray);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease;
+      font-size: 1.05em;
+    }
+
+    .tab.active {
+      color: var(--text-white);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 4px;
+      background-color: var(--accent-blue);
+      border-radius: 2px;
+    }
+
+    /* ---------------------------------------------------- */
+    /* 7. Список токенов (с иконками криптовалют) */
+    /* ---------------------------------------------------- */
+    .tokens {
+      padding: 28px 24px;
+      flex-grow: 1;
+      background-color: var(--bg-secondary);
+    }
+
+    .token {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .token:last-child {
+      border-bottom: none;
+    }
+
+    .token:hover {
+      background-color: var(--bg-tertiary);
+    }
+
+    .token .left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .token img {
+      width: 44px; /* Крупнее иконки токенов */
+      height: 44px;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      /* Убедимся, что изображение всегда отображается */
+      display: block;
+    }
+
+    .token .info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .token .name {
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--text-light-gray);
+    }
+
+    .token .price-change {
+      font-size: 14px;
+      margin-top: 4px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .token .price-change.positive {
+      color: var(--positive-green);
+    }
+    .token .price-change.negative {
+      color: var(--negative-red);
+    }
+    .token .price-change svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .token .right {
+      text-align: right;
+    }
+
+    .token .amount-usd {
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--text-white);
+    }
+
+    .token .amount-crypto {
+      font-size: 14px;
+      color: var(--text-dark-gray);
+      margin-top: 4px;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    /* ---------------------------------------------------- */
+    /* 8. Футер поддержки */
+    /* ---------------------------------------------------- */
+    .support {
+      text-align: center;
+      margin-top: auto; /* Прижимает к низу */
+      padding: 20px;
+      font-size: 14px;
+      color: var(--accent-blue);
+      opacity: 0.9;
+      background-color: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: opacity 0.2s ease, background-color 0.2s ease;
+    }
+
+    .support:hover {
+      opacity: 1;
+      background-color: var(--bg-tertiary);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 9. Стили для боковой панели (только для ПК) */
+    /* ---------------------------------------------------- */
+    .sidebar {
+      width: 300px; /* Более широкая боковая панель */
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      box-sizing: border-box;
+      flex-shrink: 0; /* Не дает сайдбару сжиматься */
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 25px;
+    }
+
+    .sidebar-header img {
+      width: 40px;
+    }
+
+    .sidebar-header span {
+      font-weight: 800;
+      font-size: 1.5em;
+      color: var(--text-white);
+    }
+
+    .sidebar-nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-nav li {
+      margin-bottom: 10px;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 15px 20px;
+      color: var(--text-medium-gray);
+      text-decoration: none;
+      border-radius: 14px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      font-weight: 600;
+      font-size: 1.1em;
+      position: relative;
+    }
+
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background-color: var(--bg-tertiary);
+      color: var(--accent-blue);
+    }
+
+    .sidebar-nav a.active::before { /* Индикатор активного пункта */
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 6px;
+        height: 80%;
+        background-color: var(--accent-blue);
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+    }
+
+    .sidebar-nav svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2;
+    }
+
+    .sidebar-footer {
+      margin-top: auto; /* Прижимает к низу */
+      padding-top: 25px;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      font-size: 0.9em;
+      color: var(--text-dark-gray);
+      opacity: 0.7;
+    }
+
+    /* ---------------------------------------------------- */
+    /* 10. Медиа-запросы для адаптивности */
+    /* ---------------------------------------------------- */
+
+    /* Мобильный вид (до 880px) */
+    @media (max-width: 880px) {
+      .app-container {
+        flex-direction: column;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+        min-height: 100vh;
+      }
+
+      body {
+        padding: 0;
+        align-items: flex-start;
+      }
+
+      .app {
+        max-width: 100%;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        display: none; /* Скрываем сайдбар на мобильных */
+      }
+
+      .balance-usd {
+        font-size: 44px;
+      }
+
+      .action-buttons {
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 20px;
+      }
+
+      .action-button {
+        width: 60px;
+        height: 60px;
+      }
+      .action-button svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .tabs {
+        padding: 0;
+      }
+
+      .token {
+        padding: 18px 0;
+      }
+      .token img {
+        width: 38px;
+        height: 38px;
+      }
+      .token .name, .token .amount-usd {
+        font-size: 16px;
+      }
+      .token .price-change, .token .amount-crypto {
+        font-size: 13px;
+      }
+    }
+
+    /* Десктопный вид (от 881px и выше) */
+    @media (min-width: 881px) {
+      .app-container {
+        min-height: 900px;
+      }
+      .app {
+        flex-grow: 1;
+        min-height: auto;
+        border-left: 1px solid var(--border-color);
+      }
+      .tabs {
+        border-bottom: none;
+        padding-top: 30px;
+        padding-left: 30px;
+        justify-content: flex-start;
+        gap: 40px;
+      }
+      .tab {
+        flex: unset;
+        padding: 12px 0;
+      }
+      .tab.active::after {
+        width: 100%;
+      }
+      .tokens {
+        padding-top: 0;
+        padding-left: 30px;
+      }
+      .header {
+        justify-content: flex-end;
+        border-bottom: none;
+        background-color: var(--bg-secondary);
+        padding-top: 30px;
+        padding-bottom: 20px;
+      }
+      .account {
+        display: none; /* Скрываем название аккаунта в основном хедере */
+      }
+      .address {
+        margin-left: auto;
+        font-size: 0.9em;
+        padding: 10px 18px;
+      }
+      .balance-section {
+        border-radius: 18px;
+        margin: 0 30px 30px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      }
+      .action-buttons {
+        background-color: transparent;
+        border-bottom: none;
+        padding: 0 30px 30px;
+        justify-content: flex-start;
+      }
+      .token {
+        padding: 28px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <img src="images/MetaMask-icon-fox.svg" alt="MetaMaks" width="40">
+        <span>MetaMaks</span>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="#" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h12a2 2 0 0 1 0 4H5a2 2 0 0 0 0 4h12a2 2 0 0 0 2 2v-3"/><path d="M10 12h.01"/></svg>
+            Портфель
+          </a></li>
+          <li><a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-area-chart"><path d="M3 3v18h18"/><path d="M7 12v5h12V8l-5 5-4-4Z"/></svg>
+            Активность
+          </a></li>
+          <li><a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scan"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+            NFT
+          </a></li>
+          <li><a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.04.05a2 2 0 0 1 .73 2.05v.32a2 2 0 0 1-.73 2.05l-.04.05a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.04-.05a2 2 0 0 1-.73-2.05v-.32a2 2 0 0 1 .73-2.05l.04-.05a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Настройки
+          </a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        ZeniMask v1.1.0
+      </div>
+    </div>
+
+    <div class="app">
+      <div class="header">
+        <div class="account">
+          <img src="images/MetaMask-icon-fox.png" alt="MetaMask" width="26">
+          <span>MetaMask</span>
+        </div>
+        <div class="address" title="Копировать адрес">
+          0x3F8b9...A1b7c
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2v2"/></svg>
+        </div>
+      </div>
+
+      <div class="balance-section">
+        <div class="balance-usd">$700.00</div> <div class="balance-change positive">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          +0.15% за сегодня
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <div class="button-group">
+          <div class="action-button" title="Отправить">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send-horizontal"><path d="m17 12-5 5-5-5"/><path d="M12 17V2"/><path d="M22 12H2"/></svg>
+          </div>
+          <div class="button-label">Отправить</div>
+        </div>
+        <div class="button-group">
+          <div class="action-button" title="Получить">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-to-line"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
+          </div>
+          <div class="button-label">Получить</div>
+        </div>
+        <div class="button-group">
+          <div class="action-button" title="Обмен">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-right"><path d="M8 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="M16 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M12 8v8"/><path d="m8 12 4 4 4-4"/></svg>
+          </div>
+          <div class="button-label">Обмен</div>
+        </div>
+        <div class="button-group">
+          <div class="action-button" title="Купить">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>
+          </div>
+          <div class="button-label">Купить</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">Токены</div>
+        <div class="tab">NFT</div>
+        <div class="tab">История</div>
+      </div>
+
+      <div class="tokens">
+        <div class="token">
+          <div class="left">
+            <img src="images/ethereum.png" alt="ETH">
+            <div class="info">
+              <div class="name">Ethereum</div>
+              <div class="price-change positive">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                +0.5%
+              </div>
+            </div>
+          </div>
+          <div class="right">
+            <div class="amount-usd">$250.00</div> <div class="amount-crypto">0.1 ETH</div>
+          </div>
+        </div>
+
+        <div class="token">
+          <div class="left">
+            <img src="images/bitcoin.png" alt="BTC">
+            <div class="info">
+              <div class="name">Bitcoin</div>
+              <div class="price-change positive">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                +0.3%
+              </div>
+            </div>
+          </div>
+          <div class="right">
+            <div class="amount-usd">$300.00</div> <div class="amount-crypto">0.003 BTC</div>
+          </div>
+        </div>
+
+        <div class="token">
+          <div class="left">
+            <img src="images/solana.png" alt="SOL">
+            <div class="info">
+              <div class="name">Solana</div>
+              <div class="price-change positive">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                +0.7%
+              </div>
+            </div>
+          </div>
+          <div class="right">
+            <div class="amount-usd">$100.00</div> <div class="amount-crypto">0.65 SOL</div>
+          </div>
+        </div>
+
+        <div class="token">
+          <div class="left">
+            <img src="images/cardano.png" alt="ADA">
+            <div class="info">
+              <div class="name">Cardano</div>
+              <div class="price-change negative">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-down"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+                -0.1%
+              </div>
+            </div>
+          </div>
+          <div class="right">
+            <div class="amount-usd">$50.00</div> <div class="amount-crypto">80.00 ADA</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="support">Поддержка ZeniMask</div>
+    </div>
+  </div>
+</body>
+</html>

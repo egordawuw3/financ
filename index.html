@@ -68,9 +68,8 @@
     }
 
     /* ---------------------------------------------------- */
-    /* 3. Хедер (шапка) приложения - ЭТОТ БЛОК ТЕПЕРЬ НЕ ИСПОЛЬЗУЕТСЯ В HTML */
+    /* 3. Хедер (шапка) приложения */
     /* ---------------------------------------------------- */
-    /* Эти стили оставлены для справки, но элемент .header удален из HTML */
     .header {
       display: flex;
       align-items: center;
@@ -214,7 +213,7 @@
     }
 
     /* ---------------------------------------------------- */
-    /* 6. Вкладки (Токены, NFT, История) */
+    /* 6. Вкладки (Токены, NFT) */
     /* ---------------------------------------------------- */
     .tabs {
       display: flex;
@@ -253,15 +252,21 @@
     }
 
     /* ---------------------------------------------------- */
-    /* 7. Список токенов (с иконками криптовалют) */
+    /* 7. Секции контента (Токены, NFT) */
     /* ---------------------------------------------------- */
-    .tokens {
-      padding: 28px 24px;
-      flex-grow: 1;
-      background-color: var(--bg-secondary);
+    .tab-content {
+        display: none; /* Скрыто по умолчанию */
+        padding: 28px 24px;
+        flex-grow: 1;
+        background-color: var(--bg-secondary);
     }
 
-    .token {
+    .tab-content.active {
+        display: block; /* Показываем активную вкладку */
+    }
+
+    /* Стили для списка токенов */
+    #tokens-content .token { /* Используем вложенность для специфичности */
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -271,21 +276,21 @@
       transition: background-color 0.2s ease;
     }
 
-    .token:last-child {
+    #tokens-content .token:last-child {
       border-bottom: none;
     }
 
-    .token:hover {
+    #tokens-content .token:hover {
       background-color: var(--bg-tertiary);
     }
 
-    .token .left {
+    #tokens-content .token .left {
       display: flex;
       align-items: center;
       gap: 18px;
     }
 
-    .token img {
+    #tokens-content .token img {
       width: 38px;
       height: 38px;
       border-radius: 50%;
@@ -293,18 +298,18 @@
       display: block;
     }
 
-    .token .info {
+    #tokens-content .token .info {
         display: flex;
         flex-direction: column;
     }
 
-    .token .name {
+    #tokens-content .token .name {
       font-weight: 600;
       font-size: 16px;
       color: var(--text-light-gray);
     }
 
-    .token .price-change {
+    #tokens-content .token .price-change {
       font-size: 13px;
       margin-top: 4px;
       font-weight: 500;
@@ -312,33 +317,101 @@
       align-items: center;
       gap: 4px;
     }
-    .token .price-change.positive {
+    #tokens-content .token .price-change.positive {
       color: var(--positive-green);
     }
-    .token .price-change.negative {
+    #tokens-content .token .price-change.negative {
       color: var(--negative-red);
     }
-    .token .price-change svg {
+    #tokens-content .token .price-change svg {
       width: 16px;
       height: 16px;
     }
 
-    .token .right {
+    #tokens-content .token .right {
       text-align: right;
     }
 
-    .token .amount-usd {
+    #tokens-content .token .amount-usd {
       font-weight: 600;
       font-size: 16px;
       color: var(--text-white);
     }
 
-    .token .amount-crypto {
+    #tokens-content .token .amount-crypto {
       font-size: 13px;
       color: var(--text-dark-gray);
       margin-top: 4px;
       font-family: 'Roboto Mono', monospace;
     }
+
+    /* Стили для списка NFT */
+    .nft-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 2-3 NFT в ряд */
+        gap: 20px;
+        padding-bottom: 20px; /* Отступ снизу, если много NFT */
+    }
+
+    .nft-card {
+        background-color: var(--bg-tertiary);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+        cursor: pointer; /* Курсор остается, чтобы показать интерактивность */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* Занимаем всю высоту */
+    }
+
+    .nft-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    }
+
+    .nft-card img {
+        width: 100%;
+        height: 150px; /* Фиксированная высота для изображений NFT */
+        display: block;
+        border-bottom: 1px solid var(--border-color);
+        object-fit: cover; /* Гарантирует, что изображение покроет область */
+    }
+
+    .nft-info {
+        padding: 12px;
+        text-align: center;
+        flex-grow: 1; /* Чтобы инфо занимало оставшееся место */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Распределить контент */
+    }
+
+    .nft-name {
+        font-weight: 600;
+        font-size: 1.0em;
+        color: var(--text-light-gray);
+        margin-bottom: 4px;
+        white-space: nowrap; /* Предотвращает перенос названия */
+        overflow: hidden; /* Скрывает часть, которая выходит за пределы */
+        text-overflow: ellipsis; /* Добавляет "..." к обрезанному тексту */
+    }
+
+    .nft-collection {
+        font-size: 0.8em;
+        color: var(--text-dark-gray);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .nft-price {
+        font-weight: 700;
+        font-size: 1.1em;
+        color: var(--accent-blue);
+        margin-top: 8px;
+    }
+    
 
     /* ---------------------------------------------------- */
     /* 8. Футер поддержки */
@@ -365,6 +438,16 @@
 <body>
   <div class="app-container">
     <div class="app">
+      <div class="header">
+        <div class="account">
+          <img src="images/MetaMask-icon-fox.png" alt="MetaMask" width="26">
+          <span>MetaMask</span>
+        </div>
+        <div class="address" title="Копировать адрес">
+          0x3F8b9...A1b7c
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2v2"/></svg>
+        </div>
+      </div>
       <div class="balance-section">
         <div class="balance-usd">$700.00</div> <div class="balance-change positive">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
@@ -387,7 +470,7 @@
         </div>
         <div class="button-group">
           <div class="action-button" title="Обмен">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-right"><path d="M8 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="M16 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M12 8v8"/><path d="m8 12 4 4 4-4"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-right"><path d="M8 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="M16 3h4a2 2 0 0 1 2 2v14a2 2 0 0 0-2 2h-4"/><path d="M12 8v8"/><path d="m8 12 4 4 4-4"/></svg>
           </div>
           <div class="button-label">Обмен</div>
         </div>
@@ -400,12 +483,11 @@
       </div>
 
       <div class="tabs">
-        <div class="tab active">Токены</div>
-        <div class="tab">NFT</div>
-        <div class="tab">История</div>
+        <div class="tab active" data-tab-target="tokens-content">Токены</div>
+        <div class="tab" data-tab-target="nft-content">NFT</div>
       </div>
 
-      <div class="tokens">
+      <div id="tokens-content" class="tab-content active">
         <div class="token">
           <div class="left">
             <img src="images/ethereum.png" alt="ETH">
@@ -428,7 +510,7 @@
             <div class="info">
               <div class="name">Bitcoin</div>
               <div class="price-change positive">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucude-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 +0.3%
               </div>
             </div>
@@ -471,8 +553,102 @@
         </div>
       </div>
 
+      <div id="nft-content" class="tab-content">
+        <div class="nft-grid">
+          <div class="nft-card">
+            <img src="https://i.seadn.io/g/files/g1/0xbc4ca0eda7647a8ab7c2061c2e118a18a93f1c1f/8144.png?auto=format&w=3840" alt="Bored Ape NFT">
+            <div class="nft-info">
+              <div class="nft-name">Bored Ape #8144</div>
+              <div class="nft-collection">Bored Ape YC</div>
+              <div class="nft-price">80 ETH</div>
+            </div>
+          </div>
+          <div class="nft-card">
+            <img src="https://i.seadn.io/g/files/g1/0xb47e3cd837ddf8e4c57f05d70ab865de6e193bcc/4156.png?auto=format&w=3840" alt="CryptoPunk NFT">
+            <div class="nft-info">
+              <div class="nft-name">CryptoPunk #4156</div>
+              <div class="nft-collection">CryptoPunks</div>
+              <div class="nft-price">2.5k ETH</div>
+            </div>
+          </div>
+          <div class="nft-card">
+            <img src="https://i.seadn.io/g/files/g1/0xed5af388653567199988a84ef205c124062abbe1/1691.png?auto=format&w=3840" alt="Azuki NFT">
+            <div class="nft-info">
+              <div class="nft-name">Azuki #1691</div>
+              <div class="nft-collection">Azuki</div>
+              <div class="nft-price">10 ETH</div>
+            </div>
+          </div>
+          <div class="nft-card">
+            <img src="https://i.seadn.io/g/files/g1/0x8a90cab2b38dba80c64b77340f2eb1993a23cd7a/9696.png?auto=format&w=3840" alt="Doodle NFT">
+            <div class="nft-info">
+              <div class="nft-name">Doodle #9696</div>
+              <div class="nft-collection">Doodles</div>
+              <div class="nft-price">8 ETH</div>
+            </div>
+          </div>
+          <div class="nft-card">
+            <img src="https://i.seadn.io/g/files/g1/0x495f947276749ce646f68ac8c248420045cb7b5e/68310022204558296726887550346379555132517812165985834914107111422797678563329/base.gif?auto=format&w=3840" alt="Cool Cats NFT">
+            <div class="nft-info">
+              <div class="nft-name">Cool Cat #3333</div>
+              <div class="nft-collection">Cool Cats</div>
+              <div class="nft-price">3.5 ETH</div>
+            </div>
+          </div>
+          <div class="nft-card">
+            <img src="https://i.seadn.io/g/files/g1/0x23581767a106ae21c074740d38568b04e75a61dc/2847.png?auto=format&w=3840" alt="Moonbirds NFT">
+            <div class="nft-info">
+              <div class="nft-name">Moonbird #2847</div>
+              <div class="nft-collection">Moonbirds</div>
+              <div class="nft-price">6 ETH</div>
+            </div>
+          </div>
+          <div class="nft-card">
+            <img src="https://i.seadn.io/g/files/g1/0x3b3ee1931dc30c1957379fac9d217f5fcf5c8f5d/4794.png?auto=format&w=3840" alt="VeeFriends NFT">
+            <div class="nft-info">
+              <div class="nft-name">VeeFriends #4794</div>
+              <div class="nft-collection">VeeFriends</div>
+              <div class="nft-price">5 ETH</div>
+            </div>
+          </div>
+          <div class="nft-card">
+            <img src="https://i.seadn.io/g/files/g1/0xa7258380b1a0a5d20364f7b2c589a19c354d193d/3362.png?auto=format&w=3840" alt="Pudgy Penguins NFT">
+            <div class="nft-info">
+              <div class="nft-name">Pudgy Penguin #3362</div>
+              <div class="nft-collection">Pudgy Penguins</div>
+              <div class="nft-price">4 ETH</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="support">Поддержка ZeniMask</div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Удаляем класс 'active' со всех вкладок
+          tabs.forEach(item => item.classList.remove('active'));
+          // Добавляем класс 'active' текущей вкладке
+          tab.classList.add('active');
+
+          // Скрываем все содержимое вкладок
+          tabContents.forEach(content => content.classList.remove('active'));
+
+          // Показываем содержимое, соответствующее выбранной вкладке
+          const targetId = tab.dataset.tabTarget;
+          const targetContent = document.getElementById(targetId);
+          if (targetContent) {
+            targetContent.classList.add('active');
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
